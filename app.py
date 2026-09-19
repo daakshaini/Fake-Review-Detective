@@ -57,10 +57,6 @@ st.markdown(
         color: white;
     }
 
-    /* ======================================================
-       SIDEBAR COLLAPSE / EXPAND ARROW
-       ====================================================== */
-
     button[data-testid="stSidebarCollapseButton"],
     button[data-testid="stExpandSidebarButton"] {
         background-color: #111827 !important;
@@ -160,18 +156,6 @@ st.markdown(
         color: #64748b;
         font-size: 14px;
         margin-bottom: 12px;
-    }
-
-    /* ======================================================
-       REVIEW CARD
-       ====================================================== */
-
-    .review-card {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 16px;
-        padding: 22px;
-        box-shadow: 0 5px 16px rgba(15, 23, 42, 0.05);
     }
 
     /* ======================================================
@@ -398,7 +382,7 @@ st.markdown(
 
 st.markdown(
     '<div class="section-text">'
-    'Enter a hotel review below and analyze its linguistic patterns.'
+    'Select a hotel, enter its review, and analyze the review text.'
     '</div>',
     unsafe_allow_html=True
 )
@@ -408,6 +392,36 @@ st.markdown(
 # ============================================================
 
 with st.container(border=True):
+
+    st.markdown("### 🏨 Select Hotel")
+
+    hotels = [
+        "Affinia",
+        "Allegro",
+        "Amalfi",
+        "Ambassador",
+        "Conrad",
+        "Fairmont",
+        "Hard Rock",
+        "Hilton",
+        "Homewood Suites",
+        "Hyatt",
+        "InterContinental",
+        "James",
+        "Knickerbocker",
+        "Monaco",
+        "Omni",
+        "Palmer House",
+        "Sheraton",
+        "Sofitel",
+        "Swissotel",
+        "Talbott"
+    ]
+
+    selected_hotel = st.selectbox(
+        "Choose the hotel being reviewed:",
+        hotels
+    )
 
     st.markdown("### ✍️ Enter Hotel Review")
 
@@ -437,7 +451,7 @@ with st.container(border=True):
     }
 
     selected_sample = st.selectbox(
-        "🧪 Try a sample review",
+        "🧪 Try a sample review:",
         list(sample_reviews.keys())
     )
 
@@ -470,6 +484,7 @@ if analyze_button:
 
     else:
 
+        # The ML model uses review text only.
         prediction = model.predict([review])[0]
 
         decision_score = float(
@@ -480,6 +495,18 @@ if analyze_button:
             '<div class="section-title">📊 Analysis Result</div>',
             unsafe_allow_html=True
         )
+
+        # ----------------------------------------------------
+        # SELECTED HOTEL
+        # ----------------------------------------------------
+
+        st.write(
+            f"**Hotel selected:** {selected_hotel}"
+        )
+
+        # ----------------------------------------------------
+        # PREDICTION
+        # ----------------------------------------------------
 
         if prediction == 1:
 
@@ -515,6 +542,10 @@ if analyze_button:
 
             direction = "Truthful"
 
+        # ----------------------------------------------------
+        # DECISION SCORE
+        # ----------------------------------------------------
+
         score_col1, score_col2 = st.columns(2)
 
         with score_col1:
@@ -532,9 +563,10 @@ if analyze_button:
             )
 
         st.info(
-            "ℹ️ The SVM decision score is not a probability "
-            "or confidence percentage. It indicates the position "
-            "of the review relative to the model's decision boundary."
+            "ℹ️ The selected hotel is displayed as contextual "
+            "information. The current SVM classifier uses the "
+            "review text for prediction. The decision score is "
+            "not a probability or confidence percentage."
         )
 
 # ============================================================
@@ -558,8 +590,8 @@ st.markdown(
 w1, w2, w3, w4, w5 = st.columns(5)
 
 workflow_data = [
-    ("📝", "Review", "User enters review"),
-    ("🧹", "Cleaning", "Text preprocessing"),
+    ("🏨", "Hotel", "Select hotel"),
+    ("📝", "Review", "Enter review"),
     ("🔤", "TF-IDF", "Text to features"),
     ("🤖", "Linear SVM", "Classification"),
     ("📊", "Prediction", "Result displayed")
@@ -637,6 +669,9 @@ with detail2:
 
             • A prediction does not prove that a review is fake
               or genuine.
+
+            • The selected hotel is contextual information and is
+              not currently used as an ML prediction feature.
             """
         )
 
