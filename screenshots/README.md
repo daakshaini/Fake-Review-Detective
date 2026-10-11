@@ -36,20 +36,20 @@
 ## 12. Final Model Evaluation
 ![Final Model Evaluation](./12_final_model_evaluation.png)
 
-## 14. GitHub Repository
+## 13. GitHub Repository
 ![GitHub Repository](./14_github_repository.png)
 
-## 15. GitHub README
+## 14. GitHub README
 ![GitHub README](./15_github_readme_overview.png)
 
-## 16. Project Workflow
+## 15. Project Workflow
 ![Project Workflow](./16_how_it_works.png)
 
-## 17. Setup Instructions
+## 16. Setup Instructions
 ![Setup Instructions](./17_setup_instructions_readme.png)
 
-## 18. Technologies and Project Structure
+## 17. Technologies and Project Structure
 ![Technologies and Project Structure](./18_technologies_project_structure.png)
 
-## 19. Limitations and Future Scope
+## 18. Limitations and Future Scope
 ![Limitations and Future Scope](./19_limitations_future_scope.png)
