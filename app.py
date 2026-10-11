@@ -30,11 +30,6 @@ model = load_model()
 st.markdown(
     """
     <style>
-
-    /* ======================================================
-       PAGE
-       ====================================================== */
-
     .stApp {
         background-color: #f5f7fb;
     }
@@ -45,9 +40,7 @@ st.markdown(
         padding-bottom: 2rem;
     }
 
-    /* ======================================================
-       SIDEBAR
-       ====================================================== */
+    /* SIDEBAR */
 
     section[data-testid="stSidebar"] {
         background-color: #111827;
@@ -78,9 +71,7 @@ st.markdown(
         stroke: white !important;
     }
 
-    /* ======================================================
-       TITLE
-       ====================================================== */
+    /* HEADER */
 
     .main-title {
         text-align: center;
@@ -97,9 +88,7 @@ st.markdown(
         margin-bottom: 22px;
     }
 
-    /* ======================================================
-       HERO
-       ====================================================== */
+    /* HERO SECTION */
 
     .hero {
         background: linear-gradient(
@@ -140,9 +129,7 @@ st.markdown(
         font-weight: 600;
     }
 
-    /* ======================================================
-       SECTION TITLES
-       ====================================================== */
+    /* SECTION HEADINGS */
 
     .section-title {
         color: #172554;
@@ -158,9 +145,7 @@ st.markdown(
         margin-bottom: 12px;
     }
 
-    /* ======================================================
-       RESULT CARDS
-       ====================================================== */
+    /* PREDICTION CARDS */
 
     .truth-result {
         background: #ecfdf5;
@@ -199,9 +184,7 @@ st.markdown(
         margin-top: 7px;
     }
 
-    /* ======================================================
-       WORKFLOW
-       ====================================================== */
+    /* WORKFLOW */
 
     .workflow {
         background: white;
@@ -231,9 +214,7 @@ st.markdown(
         line-height: 1.3;
     }
 
-    /* ======================================================
-       BUTTON
-       ====================================================== */
+    /* BUTTON */
 
     div.stButton > button {
         width: 100%;
@@ -243,9 +224,7 @@ st.markdown(
         font-weight: 700;
     }
 
-    /* ======================================================
-       FOOTER
-       ====================================================== */
+    /* FOOTER */
 
     .footer {
         text-align: center;
@@ -255,7 +234,6 @@ st.markdown(
         margin-top: 20px;
         padding-bottom: 5px;
     }
-
     </style>
     """,
     unsafe_allow_html=True
@@ -342,32 +320,16 @@ st.markdown(
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.metric(
-        "Dataset",
-        "1,596",
-        "Unique reviews"
-    )
+    st.metric("Dataset", "1,596", "Unique reviews")
 
 with col2:
-    st.metric(
-        "Model",
-        "Linear SVM",
-        "Final classifier"
-    )
+    st.metric("Model", "Linear SVM", "Final classifier")
 
 with col3:
-    st.metric(
-        "Accuracy",
-        "90.00%",
-        "Held-out test set"
-    )
+    st.metric("Accuracy", "90.00%", "Held-out test set")
 
 with col4:
-    st.metric(
-        "F1-Score",
-        "90.12%",
-        "Held-out test set"
-    )
+    st.metric("F1-Score", "90.12%", "Held-out test set")
 
 st.divider()
 
@@ -484,7 +446,7 @@ if analyze_button:
 
     else:
 
-        # The ML model uses review text only.
+        # The current model predicts from review text only.
         prediction = model.predict([review])[0]
 
         decision_score = float(
@@ -500,9 +462,7 @@ if analyze_button:
         # SELECTED HOTEL
         # ----------------------------------------------------
 
-        st.write(
-            f"**Hotel selected:** {selected_hotel}"
-        )
+        st.write(f"**Hotel selected:** {selected_hotel}")
 
         # ----------------------------------------------------
         # PREDICTION
@@ -568,6 +528,127 @@ if analyze_button:
             "review text for prediction. The decision score is "
             "not a probability or confidence percentage."
         )
+
+        # ====================================================
+        # EXPLAINABLE AI — FEATURE CONTRIBUTIONS
+        # ====================================================
+
+        with st.expander(
+            "🔎 Why did the model make this prediction?"
+        ):
+
+            try:
+
+                tfidf_step = model.named_steps["tfidf"]
+                svm_step = model.named_steps["model"]
+
+                # Convert the review into its TF-IDF vector.
+                review_vector = tfidf_step.transform([review])
+
+                # Retrieve vocabulary and fitted SVM coefficients.
+                feature_names = tfidf_step.get_feature_names_out()
+                coefficients = svm_step.coef_[0]
+
+                # Calculate each feature's contribution to the
+                # binary Linear SVM decision score.
+                contributions = (
+                    review_vector.multiply(coefficients).toarray()[0]
+                )
+
+                # Only examine features present in this review.
+                present_indices = review_vector.indices
+
+                # Positive contributions move the score toward
+                # the model's positive class (label 1).
+                toward_deceptive = sorted(
+                    [
+                        (feature_names[i], float(contributions[i]))
+                        for i in present_indices
+                        if contributions[i] > 1e-8
+                    ],
+                    key=lambda item: item[1],
+                    reverse=True
+                )[:5]
+
+                # Negative contributions move the score toward
+                # the model's negative class (label 0).
+                toward_truthful = sorted(
+                    [
+                        (feature_names[i], float(contributions[i]))
+                        for i in present_indices
+                        if contributions[i] < -1e-8
+                    ],
+                    key=lambda item: item[1]
+                )[:5]
+
+                if prediction == 1:
+                    supporting_features = toward_deceptive
+                    opposing_features = toward_truthful
+                else:
+                    supporting_features = toward_truthful
+                    opposing_features = toward_deceptive
+
+                left, right = st.columns(2)
+
+                with left:
+
+                    st.markdown(
+                        "**Patterns supporting the prediction**"
+                    )
+
+                    if supporting_features:
+
+                        for term, value in supporting_features:
+
+                            st.write(
+                                f"• `{term}` — contribution: "
+                                f"`{abs(value):.4f}`"
+                            )
+
+                    else:
+
+                        st.write(
+                            "No strong individual word contribution "
+                            "was found in this review."
+                        )
+
+                with right:
+
+                    st.markdown(
+                        "**Patterns pushing the other way**"
+                    )
+
+                    if opposing_features:
+
+                        for term, value in opposing_features:
+
+                            st.write(
+                                f"• `{term}` — contribution: "
+                                f"`{abs(value):.4f}`"
+                            )
+
+                    else:
+
+                        st.write(
+                            "No strong opposing word contribution "
+                            "was found in this review."
+                        )
+
+                st.caption(
+                    "These values represent the contributions of "
+                    "present TF-IDF features to the linear SVM "
+                    "decision score. They show model behavior, "
+                    "not proof that a review is truthful or deceptive."
+                )
+
+            except (AttributeError, KeyError, ValueError) as error:
+
+                st.warning(
+                    "The prediction succeeded, but the explanation "
+                    "could not be generated for this model pipeline. "
+                    "Please check the model's feature and classifier "
+                    "steps before using this explanation feature."
+                )
 
 # ============================================================
 # WORKFLOW
@@ -640,7 +721,7 @@ with detail1:
             • Multinomial Naive Bayes
             • Linear SVM
 
-            Final Linear SVM:
+            Final Linear SVM test results:
 
             Accuracy: 90.00%
 
