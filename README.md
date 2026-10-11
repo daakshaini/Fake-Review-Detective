@@ -1,58 +1,52 @@
 # 🔍 Fake Review Detective
 
-## NLP and Machine Learning Based System for Detecting Potentially Deceptive Hotel Reviews
+### NLP and Machine Learning Based System for Detecting Potentially Deceptive Hotel Reviews
 
-Fake Review Detective is a Natural Language Processing (NLP) and Machine Learning based application that analyzes hotel review text and predicts whether a review is **Likely Truthful** or **Potentially Deceptive**.
+**Fake Review Detective** is a Data Science and Machine Learning project that analyzes hotel review text and classifies reviews as **Likely Truthful** or **Potentially Deceptive** using Natural Language Processing (NLP).
 
-The system learns linguistic patterns from a labeled hotel-review dataset and uses a **TF-IDF + Linear Support Vector Machine (SVM)** pipeline for classification.
+The application uses TF-IDF for text feature extraction and a trained Linear Support Vector Machine (SVM) classifier to identify linguistic patterns associated with the two classes.
 
-> **Important:** The system provides a machine-learning prediction based on patterns learned from the dataset. It does not prove that a review is actually genuine or fake.
+## 🌐 Live Demo
 
----
+**Try the deployed application here:**
+
+https://fake-review-detective.streamlit.app/
+
+**GitHub Repository:**  
+https://github.com/daakshaini/Fake-Review-Detective
 
 ## 📌 Project Overview
 
-Online review platforms contain a large number of customer reviews. Some reviews may contain deceptive or artificially generated content, making it difficult to assess their reliability.
+Online customer reviews influence purchasing decisions, hotel bookings, and customer expectations. However, some reviews may contain deceptive content that makes it difficult for readers to assess their reliability.
 
-This project explores how Natural Language Processing and Machine Learning can be used to analyze review text and identify linguistic patterns associated with deceptive reviews.
+This project explores how NLP and supervised machine learning can be used to analyze hotel review text and identify patterns associated with truthful and deceptive reviews.
 
-The complete project includes:
+The application allows users to select a hotel, enter or select a sample review, analyze its text, and view the model's prediction and SVM decision score.
 
-- Data understanding and exploration
-- Data cleaning
-- Exploratory Data Analysis (EDA)
-- Text preprocessing
-- TF-IDF feature extraction
-- Machine Learning model development
-- Model comparison
-- Cross-validation
-- Hyperparameter tuning
-- Error analysis
-- Model serialization
-- Streamlit web application
+> **Important:** The application provides a machine-learning prediction. It cannot independently verify whether a review is genuinely truthful or deceptive.
 
----
+## 🎯 Objectives
 
-## 🎯 Objective
-
-The main objective of this project is to develop a machine-learning system that analyzes a hotel review and classifies it into one of two categories:
-
-- **Likely Truthful**
-- **Potentially Deceptive**
-
-The project focuses specifically on **hotel review text**.
-
----
+- Analyze hotel reviews using Natural Language Processing.
+- Explore and preprocess a labeled review dataset.
+- Convert review text into numerical features using TF-IDF.
+- Train and compare multiple machine-learning classifiers.
+- Evaluate model performance using appropriate classification metrics.
+- Build an interactive Streamlit web application.
+- Demonstrate the limitations of automated review classification.
 
 ## 📊 Dataset
 
-The project uses the **Deceptive Opinion Spam Corpus** containing hotel reviews labeled as truthful or deceptive.
+The project uses a labeled hotel-review dataset containing truthful and deceptive reviews.
 
 After removing duplicate records, the dataset contains:
 
-- **1,596 unique reviews**
-- **800 deceptive reviews**
-- **796 truthful reviews**
+| Dataset Information | Count |
+|---|---:|
+| Original records | 1,600 |
+| Unique reviews after duplicate removal | 1,596 |
+| Deceptive reviews | 800 |
+| Truthful reviews | 796 |
 
 The dataset includes fields such as:
 
@@ -62,162 +56,298 @@ The dataset includes fields such as:
 - Source
 - Review text
 
-The current machine-learning application focuses primarily on the **review text**.
-
----
+The final classifier uses the review text as its predictive input.
 
 ## 🧹 Data Preprocessing
 
-The following preprocessing steps were performed:
+The data preparation workflow included:
 
-1. Duplicate records were identified and removed.
-2. Text was converted to lowercase.
-3. HTML tags were removed.
-4. URLs were removed.
-5. Non-alphabetic characters were removed.
-6. Extra whitespace was normalized.
-7. Cleaned review text was used for feature extraction.
+1. Inspecting the dataset structure and column types.
+2. Checking missing values and duplicate records.
+3. Removing duplicate records.
+4. Converting review text to lowercase.
+5. Preparing cleaned text for feature extraction.
+6. Splitting the data into training and held-out test sets.
 
----
+The cleaned dataset was used to build and evaluate the classification pipelines.
 
 ## 📈 Exploratory Data Analysis
 
-Exploratory analysis was performed to understand the dataset before model training.
+Exploratory Data Analysis (EDA) was performed to understand the dataset before model training.
 
 The analysis included:
 
-- Target-class distribution
-- Review polarity distribution
-- Hotel distribution
-- Review-length analysis
-- Comparison of review lengths between truthful and deceptive classes
+- Dataset dimensions and data types.
+- Missing-value and duplicate checks.
+- Distribution of truthful and deceptive labels.
+- Review-length statistics.
+- Comparison of review lengths between the two classes.
+- Examination of relevant dataset categories.
 
-The dataset was approximately balanced between truthful and deceptive reviews.
+These steps helped establish an understanding of the data before training the models.
 
----
+## 🔤 Feature Extraction: TF-IDF
 
-## 🔤 Feature Extraction
+**Term Frequency-Inverse Document Frequency (TF-IDF)** converts text into numerical features that machine-learning algorithms can process.
 
-### TF-IDF
+TF-IDF represents the importance of terms in a review relative to the collection of documents.
 
-Term Frequency-Inverse Document Frequency (**TF-IDF**) was used to convert the cleaned review text into numerical features.
+The original feature-extraction experiment used a maximum vocabulary of 5,000 features.
 
-The final text-classification pipeline used:
-
-- Maximum features: **5,000**
-- Stop words: **English**
-- N-gram range: **Unigrams and bigrams**
-
-The TF-IDF transformation is included inside the machine-learning pipeline so that feature learning is performed correctly using the training data during evaluation.
-
----
+The TF-IDF transformer is integrated into the trained classification pipeline so that the vocabulary and feature weights are learned from the training data.
 
 ## 🤖 Machine Learning Models
 
-Three classification algorithms were evaluated:
+Three supervised classification algorithms were evaluated:
 
 1. Logistic Regression
 2. Multinomial Naive Bayes
 3. Linear Support Vector Machine (SVM)
 
-### Final Model Comparison
+### Model Comparison
+
+The following results were obtained from the held-out test evaluation.
 
 | Model | Accuracy | Precision | Recall | F1-Score |
 |---|---:|---:|---:|---:|
 | Logistic Regression | 88.75% | 86.90% | 91.25% | 89.02% |
 | Multinomial Naive Bayes | 86.88% | 83.91% | 91.25% | 87.43% |
-| Linear SVM | **90.00%** | **89.02%** | **91.25%** | **90.12%** |
+| **Linear SVM** | **90.00%** | **89.02%** | **91.25%** | **90.12%** |
 
-The **Linear SVM** achieved the highest accuracy and F1-score on the held-out test set among the evaluated models and was selected as the final application model.
+Based on the evaluated test results, the original Linear SVM pipeline was selected for the application.
 
----
+## 📊 Final Model Evaluation
+
+The final Linear SVM was evaluated on 320 held-out test reviews.
+
+| Metric | Result |
+|---|---:|
+| Test accuracy | 90.00% |
+| Precision | 89.02% |
+| Recall | 91.25% |
+| F1-score | 90.12% |
+| Correct predictions | 288 |
+| Misclassified reviews | 32 |
+
+The confusion matrix was:
+
+| Actual Class | Predicted Truthful | Predicted Deceptive |
+|---|---:|---:|
+| Truthful | 142 | 18 |
+| Deceptive | 14 | 146 |
+
+These results show that the model performs well on the evaluated dataset, but it can still misclassify some reviews.
 
 ## 🔬 Cross-Validation
 
-A **5-fold stratified cross-validation** experiment was performed on the training data for the Linear SVM pipeline.
+A five-fold cross-validation experiment was conducted on the training data for the original Linear SVM pipeline.
 
-Average cross-validation results:
-
-| Metric | Average Score |
+| Metric | Average Cross-Validation Score |
 |---|---:|
 | Accuracy | 86.99% |
 | Precision | 87.20% |
 | Recall | 86.88% |
-| F1-Score | 86.98% |
+| F1-score | 86.98% |
 
-The variation between folds shows that model performance can differ depending on the subset used for validation.
-
----
+Cross-validation helped evaluate how consistently the model performed across different training and validation folds.
 
 ## ⚙️ Hyperparameter Tuning
 
-Grid Search with 5-fold cross-validation was performed for the Linear SVM pipeline.
+Grid Search with five-fold cross-validation was used to explore alternative Linear SVM configurations.
 
-The search explored:
+The search considered parameters including:
 
-- TF-IDF maximum features
-- TF-IDF n-gram range
-- SVM regularization parameter `C`
+- TF-IDF vocabulary size.
+- TF-IDF n-gram range.
+- SVM regularization parameter `C`.
 
-The best tuning configuration obtained a cross-validation F1-score of **0.878**.
+The best tuning configuration achieved a cross-validation F1-score of 0.878.
 
-On the separate held-out test set, the tuned model achieved:
+However, the tuned model achieved 89.69% accuracy on the held-out test set, compared with 90.00% for the original model. Therefore, the original Linear SVM pipeline was retained for the application.
 
-- Accuracy: **89.69%**
-- Precision: **88.02%**
-- Recall: **91.87%**
-- F1-Score: **89.91%**
-
-The original Linear SVM pipeline was retained as the final application model because it produced better held-out test accuracy and F1-score in this experiment.
-
----
-
-## 📊 Final Model Evaluation
-
-The final Linear SVM was evaluated on **320 held-out test reviews**.
-
-Results:
-
-- **Correct predictions:** 288
-- **Misclassified reviews:** 32
-- **Test accuracy:** 90.00%
-- **Test error rate:** 10.00%
-
-### Error Breakdown
-
-- **False Positives:** 18
-- **False Negatives:** 14
-
-The misclassified reviews demonstrate that truthful and deceptive reviews can sometimes contain similar linguistic patterns. This is one limitation of a text-based classification approach.
-
----
-
-## 🧠 Model Decision Score
-
-The Streamlit application also displays the **SVM decision score** for a prediction.
-
-The decision score indicates the position of the input review relative to the SVM decision boundary.
-
-> The SVM decision score is **not a probability and not a confidence percentage**.
-
-For the trained classifier:
-
-- A positive score corresponds to the **deceptive** side of the decision boundary.
-- A negative score corresponds to the **truthful** side of the decision boundary.
-
----
-
-## 🏗️ Machine Learning Pipeline
+## 🏗️ Machine Learning Workflow
 
 ```text
-Hotel Review
-     ↓
-Text Cleaning
-     ↓
+Hotel Review Dataset
+        ↓
+Data Inspection and Cleaning
+        ↓
+Exploratory Data Analysis
+        ↓
+Train-Test Split
+        ↓
 TF-IDF Feature Extraction
-     ↓
-Linear SVM
-     ↓
-Prediction
-     ↓
-Likely Truthful / Potentially Deceptive
+        ↓
+Machine Learning Model Comparison
+        ↓
+Linear SVM Selection
+        ↓
+Model Evaluation and Error Analysis
+        ↓
+Save Trained Model
+        ↓
+Streamlit Web Application
+        ↓
+Review Classification
+```
+
+## 🌐 Web Application Features
+
+The Streamlit application provides the following features:
+
+- **Hotel Selection:** Select a hotel from the dropdown.
+- **Review Input:** Type or paste a hotel review.
+- **Sample Reviews:** Choose an example review for demonstration.
+- **Review Analysis:** Submit the review to the trained classifier.
+- **Prediction Output:** View a Likely Truthful or Potentially Deceptive result.
+- **SVM Decision Score:** View the numerical decision score generated by the classifier.
+- **Model Information:** Access the dataset and evaluation metrics in the sidebar.
+- **Project Details:** Review the workflow, model evaluation, and limitations.
+
+### Important Note About Hotel Selection
+
+The hotel selection is contextual information displayed by the application. The current trained classifier uses the **review text** for prediction; the selected hotel name is not a predictive feature.
+
+## 🧠 Understanding the SVM Decision Score
+
+The application displays an SVM decision score alongside the classification result.
+
+The score indicates the review's position relative to the model's decision boundary.
+
+For the trained binary classifier:
+
+- A positive score corresponds to the deceptive class.
+- A negative score corresponds to the truthful class.
+
+The score is **not a probability or a calibrated confidence percentage**. A prediction should not be treated as proof that the review is genuine or deceptive.
+
+## 🛠️ Technologies Used
+
+| Technology | Purpose |
+|---|---|
+| Python | Main programming language |
+| Pandas | Data handling and analysis |
+| NumPy | Numerical operations |
+| Scikit-learn | Machine-learning pipelines and evaluation |
+| TF-IDF | Text feature extraction |
+| Linear SVM | Final classification model |
+| Joblib | Saving and loading the trained pipeline |
+| Streamlit | Interactive web interface |
+| Google Colab | Data analysis and model experiments |
+| Visual Studio Code | Application development |
+| Git | Version control |
+| GitHub | Source-code repository |
+| Streamlit Community Cloud | Application deployment |
+
+## 📁 Project Structure
+
+```text
+Fake-Review-Detective/
+│
+├── app.py
+├── fake_review_svm_pipeline.pkl
+├── requirements.txt
+├── .gitignore
+└── README.md
+```
+
+### File Description
+
+- `app.py` — Contains the Streamlit web application and prediction logic.
+- `fake_review_svm_pipeline.pkl` — Saved TF-IDF and Linear SVM pipeline.
+- `requirements.txt` — Python dependencies required to run the application.
+- `.gitignore` — Specifies files and folders that Git should ignore.
+- `README.md` — Project documentation.
+
+## 🚀 How to Run Locally
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/daakshaini/Fake-Review-Detective.git
+```
+
+### 2. Open the project directory
+
+```bash
+cd Fake-Review-Detective
+```
+
+### 3. Create a virtual environment
+
+```bash
+python -m venv venv
+```
+
+### 4. Activate the virtual environment on Windows
+
+```powershell
+venv\Scripts\activate
+```
+
+### 5. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 6. Run the application
+
+```bash
+streamlit run app.py
+```
+
+The local application will normally be available at:
+
+http://localhost:8501
+
+## ⚠️ Limitations
+
+- The model was trained and evaluated on a particular hotel-review dataset.
+- The classifier primarily uses textual patterns rather than independently verified facts.
+- A negative review is not necessarily deceptive, and an extremely positive review is not necessarily fake.
+- The model cannot independently confirm whether a reviewer actually stayed at a hotel.
+- Some truthful and deceptive reviews can have similar linguistic patterns.
+- The current evaluation does not establish performance on unrelated domains such as product reviews or restaurant reviews.
+- A held-out test accuracy of 90% means that errors remain possible on unseen reviews.
+
+## 🔮 Future Scope
+
+Possible future improvements include:
+
+- Evaluating larger and more diverse review datasets.
+- Exploring character-level text features.
+- Testing additional classification algorithms.
+- Incorporating review metadata in a carefully designed and evaluated model.
+- Exploring explainable NLP techniques.
+- Calibrating model outputs if reliable probability estimates are needed.
+- Testing the classifier on independently collected hotel reviews.
+- Improving prediction analysis and model monitoring.
+- Adding optional review history and user accounts if future requirements justify them.
+
+## 🎓 Academic Significance
+
+This project demonstrates an end-to-end Data Science workflow involving:
+
+- Data inspection and preprocessing.
+- Exploratory Data Analysis.
+- Natural Language Processing.
+- Text feature extraction.
+- Supervised machine learning.
+- Model comparison and evaluation.
+- Cross-validation and hyperparameter tuning.
+- Error analysis.
+- Model serialization.
+- Web application development and deployment.
+
+It connects machine-learning experimentation with a usable application that demonstrates the final classifier.
+
+## 👩‍💻 Project Author
+
+**Daakshaini**
+
+Data Science / Machine Learning Academic Project
+
+## 📜 Disclaimer
+
+Fake Review Detective is developed for academic and educational purposes. Its classifications are based on patterns learned from labeled training data. Results should be treated as decision-support information, not definitive evidence that a review is truthful or deceptive.
