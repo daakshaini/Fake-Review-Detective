@@ -30,7 +30,11 @@ st.markdown(
     """
     <style>
     .stApp { background-color: #f5f7fb; }
-    .block-container { max-width: 1150px; padding-top: 1.5rem; padding-bottom: 2rem; }
+    .block-container {
+    max-width: 1150px;
+    padding-top: 3rem;
+    padding-bottom: 2rem;
+}
     section[data-testid="stSidebar"] { background-color: #111827; }
     section[data-testid="stSidebar"] * { color: white; }
     button[data-testid="stSidebarCollapseButton"],
